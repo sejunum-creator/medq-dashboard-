@@ -13,14 +13,21 @@ HEADERS = {
 
 def notion_query(database_id):
     url = f"https://api.notion.com/v1/databases/{database_id}/query"
+    print(f"  Querying: {url}")
     rows = []
     payload = {"page_size": 100}
     while True:
         data = json.dumps(payload).encode()
         req = urllib.request.Request(url, data=data, headers=HEADERS, method="POST")
-        with urllib.request.urlopen(req) as resp:
-            result = json.loads(resp.read())
+        try:
+            with urllib.request.urlopen(req) as resp:
+                result = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode()
+            print(f"  HTTP {e.code}: {body}")
+            raise
         rows.extend(result["results"])
+        print(f"  Got {len(result['results'])} rows (total: {len(rows)})")
         if not result.get("has_more"):
             break
         payload["start_cursor"] = result["next_cursor"]
