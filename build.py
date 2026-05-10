@@ -1,23 +1,24 @@
-import os, csv, json, re, datetime, urllib.request, urllib.error
+import os, json, re, datetime, urllib.request, urllib.error
 
-NOTION_TOKEN = os.environ["NOTION_TOKEN"]
+NOTION_TOKEN_MEDQ = os.environ["NOTION_TOKEN"]
+NOTION_TOKEN_QID = os.environ["NOTION_TOKEN_QID"]
 MEDQ_DB = "3152de0a0f0a80249ed8e5289d18757d"
-
-HEADERS = {
-    "Authorization": f"Bearer {NOTION_TOKEN}",
-    "Notion-Version": "2022-06-28",
-    "Content-Type": "application/json",
-}
+QID_DB = "354e0f38b08881db8642c286b3d64be0"
 
 
-def notion_query(database_id):
+def notion_query(database_id, token):
     url = f"https://api.notion.com/v1/databases/{database_id}/query"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+    }
     print(f"  Querying: {url}")
     rows = []
     payload = {"page_size": 100}
     while True:
         data = json.dumps(payload).encode()
-        req = urllib.request.Request(url, data=data, headers=HEADERS, method="POST")
+        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
         try:
             with urllib.request.urlopen(req) as resp:
                 result = json.loads(resp.read())
@@ -69,26 +70,26 @@ def prop_text(prop):
 
 
 def build():
-    # 1. QID Index from local CSV
-    print("Reading QID Index from CSV...")
-    with open("qid_index.csv", "r", encoding="utf-8-sig") as f:
-        qid_rows_raw = list(csv.DictReader(f))
-    print(f"  {len(qid_rows_raw)} rows")
+    # 1. QID Index from Notion API
+    print("Fetching QID Index...")
+    qid_raw = notion_query(QID_DB, NOTION_TOKEN_QID)
+    print(f"  {len(qid_raw)} rows")
 
     qid_rows = []
-    for r in qid_rows_raw:
+    for page in qid_raw:
+        p = page["properties"]
         qid_rows.append({
-            "src": (r.get("원본 출처") or "").strip(),
-            "cat": (r.get("구분") or "").strip(),
-            "l1": (r.get("L1 대분류") or "").strip(),
-            "l1m": (r.get("L1 중분류") or "").strip(),
-            "l1s": (r.get("L1 소분류") or "").strip(),
-            "qid": (r.get("QID") or "").strip(),
+            "src": prop_text(p.get("원본 출처", {})).strip(),
+            "cat": prop_text(p.get("구분", {})).strip(),
+            "l1": prop_text(p.get("L1 대분류", {})).strip(),
+            "l1m": prop_text(p.get("L1 중분류", {})).strip(),
+            "l1s": prop_text(p.get("L1 소분류", {})).strip(),
+            "qid": prop_text(p.get("QID", {})).strip(),
         })
 
     # 2. MedQ Database from Notion API
     print("Fetching MedQ Database...")
-    medq_raw = notion_query(MEDQ_DB)
+    medq_raw = notion_query(MEDQ_DB, NOTION_TOKEN_MEDQ)
     print(f"  {len(medq_raw)} rows")
 
     medq_by_source = {}

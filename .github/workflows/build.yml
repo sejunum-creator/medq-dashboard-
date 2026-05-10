@@ -30,6 +30,7 @@ jobs:
       - name: Build dashboard
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_TOKEN_QID: ${{ secrets.NOTION_TOKEN_QID }}
         run: python build.py
 
       - name: Upload Pages artifact
