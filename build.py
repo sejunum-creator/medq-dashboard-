@@ -1,7 +1,6 @@
-import os, json, re, datetime, urllib.request, urllib.error
+import os, csv, json, re, datetime, urllib.request, urllib.error
 
 NOTION_TOKEN = os.environ["NOTION_TOKEN"]
-QID_DB = "a42e0f38b08882ac9934811dfe9d9912"
 MEDQ_DB = "3152de0a0f0a80249ed8e5289d18757d"
 
 HEADERS = {
@@ -70,25 +69,27 @@ def prop_text(prop):
 
 
 def build():
-    print("Fetching QID Index...")
-    qid_raw = notion_query(QID_DB)
-    print(f"  {len(qid_raw)} rows")
+    # 1. QID Index from local CSV
+    print("Reading QID Index from CSV...")
+    with open("qid_index.csv", "r", encoding="utf-8-sig") as f:
+        qid_rows_raw = list(csv.DictReader(f))
+    print(f"  {len(qid_rows_raw)} rows")
 
+    qid_rows = []
+    for r in qid_rows_raw:
+        qid_rows.append({
+            "src": (r.get("원본 출처") or "").strip(),
+            "cat": (r.get("구분") or "").strip(),
+            "l1": (r.get("L1 대분류") or "").strip(),
+            "l1m": (r.get("L1 중분류") or "").strip(),
+            "l1s": (r.get("L1 소분류") or "").strip(),
+            "qid": (r.get("QID") or "").strip(),
+        })
+
+    # 2. MedQ Database from Notion API
     print("Fetching MedQ Database...")
     medq_raw = notion_query(MEDQ_DB)
     print(f"  {len(medq_raw)} rows")
-
-    qid_rows = []
-    for page in qid_raw:
-        p = page["properties"]
-        qid_rows.append({
-            "src": prop_text(p.get("원본 출처", {})).strip(),
-            "cat": prop_text(p.get("구분", {})).strip(),
-            "l1": prop_text(p.get("L1 대분류", {})).strip(),
-            "l1m": prop_text(p.get("L1 중분류", {})).strip(),
-            "l1s": prop_text(p.get("L1 소분류", {})).strip(),
-            "qid": prop_text(p.get("QID", {})).strip(),
-        })
 
     medq_by_source = {}
     for page in medq_raw:
@@ -101,6 +102,7 @@ def build():
             }
             medq_by_source.setdefault(src, []).append(entry)
 
+    # 3. Cross-reference
     data = []
     done_count = 0
     for r in qid_rows:
