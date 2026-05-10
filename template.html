@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedQ 기출변형 작업 현황</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#3b82f6;--green:#22c55e;--yellow:#eab308;--orange:#f97316}*{margin:0;padding:0;box-sizing:border-box}body{font-family:"Segoe UI",-apple-system,sans-serif;background:var(--bg);color:var(--text);padding:24px;min-height:100vh}h1{font-size:28px;font-weight:700;margin-bottom:4px}.subtitle{color:var(--muted);font-size:14px;margin-bottom:32px}.grid{display:grid;gap:16px}.grid-4{grid-template-columns:repeat(4,1fr)}.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}.card h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}.big-num{font-size:36px;font-weight:700}.sub{font-size:13px;color:var(--muted);margin-top:4px}.pbar-bg{width:100%;height:8px;background:#0f172a;border-radius:4px;overflow:hidden;margin-top:8px}.pbar{height:100%;border-radius:4px}.stitle{font-size:18px;font-weight:600;margin:32px 0 16px}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:13px}th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0;background:var(--card);z-index:1}td.n{text-align:right;font-variant-numeric:tabular-nums}tr:hover td{background:rgba(255,255,255,.03)}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}.b-done{background:rgba(34,197,94,.15);color:#22c55e}.b-review{background:rgba(59,130,246,.15);color:#3b82f6}.b-wip{background:rgba(234,179,8,.15);color:#eab308}.b-input{background:rgba(148,163,184,.15);color:#94a3b8}.b-extract{background:rgba(249,115,22,.15);color:#f97316}.b-none{background:rgba(255,255,255,.05);color:#64748b}.mini-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:1px}.mini-bar>div{height:100%}.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}.legend-dot{width:10px;height:10px;border-radius:2px}.filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}.fbtn{padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:13px}.fbtn:hover{border-color:var(--accent);color:var(--text)}.fbtn.active{background:var(--accent);border-color:var(--accent);color:#fff}.sbox{padding:8px 14px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;width:240px}.sbox::placeholder{color:var(--muted)}.twrap{max-height:600px;overflow-y:auto}.twrap::-webkit-scrollbar{width:6px}.twrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}.mc{text-align:center!important}.matrix-cell{font-size:12px;font-weight:600;padding:6px 8px!important;text-align:center!important;min-width:50px}.matrix-cell.full{background:rgba(34,197,94,.2);color:#22c55e}.matrix-cell.partial{background:rgba(234,179,8,.15);color:#eab308}.matrix-cell.zero{color:#475569}.matrix-cell.na{color:#1e293b}@media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid-4{grid-template-columns:1fr}body{padding:12px}}
+#ytbl,#ltbl{table-layout:fixed;width:100%}th.n,td.n{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-fixed{table-layout:fixed;width:100%}.sel{padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:13px;cursor:pointer}.b-qid{background:rgba(34,197,94,.1);color:#86efac}
+
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:480px;max-width:90vw}
+.modal h3{font-size:16px;margin-bottom:16px}
+.modal-row{margin-bottom:12px}
+.modal-row label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.modal-row input,.modal-row select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:14px}
+.modal-row .val{font-size:14px;color:var(--text);padding:4px 0}
+.modal-btns{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.modal-btns button{padding:8px 20px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600}
+.btn-save{background:var(--accent);color:#fff}
+.btn-save:hover{background:#2563eb}
+.btn-cancel{background:var(--border);color:var(--text)}
+.btn-cancel:hover{background:#475569}
+.btn-export{position:fixed;bottom:24px;right:24px;padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;z-index:50;display:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.btn-export:hover{background:#2563eb}
+.change-count{position:fixed;bottom:24px;right:180px;padding:10px 16px;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px;z-index:50;display:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+</style>
+</head>
+<body>
+<h1>MedQ 기출변형 작업 현황</h1>
+<p class="subtitle">KMLE 기출문제 QID Index 기준 작업 진행 상황 — 최종 업데이트: __DATE_PLACEHOLDER__</p>
+<div class="grid grid-4" id="cards"></div>
+<h2 class="stitle">연도별 진행 현황</h2>
+<div class="legend" id="legend"></div>
+<div class="card"><table id="ytbl" style="table-layout:fixed"><colgroup><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:14%"><col style="width:36%"></colgroup><thead><tr><th>연도</th><th class="n">전체</th><th class="n">완료</th><th class="n">진행중</th><th class="n">미착수</th><th class="n">진행률</th><th style="width:28%">상태 분포</th></tr></thead><tbody></tbody></table></div>
+<h2 class="stitle">과목별 진행 현황</h2>
+<div class="card"><table id="ltbl" style="table-layout:fixed"><colgroup><col style="width:14%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:14%"><col style="width:32%"></colgroup><thead><tr><th>과목</th><th class="n">전체</th><th class="n">완료</th><th class="n">진행중</th><th class="n">미착수</th><th class="n">진행률</th><th style="width:28%">진행 바</th></tr></thead><tbody></tbody></table></div>
+<h2 class="stitle">연도 x 과목 매트릭스</h2>
+<div class="card" style="overflow-x:auto"><table id="mtbl"></table></div>
+<h2 class="stitle">전체 문제 목록 <span style="font-size:14px;color:var(--muted);font-weight:400" id="cl"></span></h2>
+<div class="filter-bar"><input type="text" class="sbox" id="sbox" placeholder="검색 (출처, 과목, 소분류...)"><button class="fbtn active" data-f="all">전체</button><button class="fbtn" data-f="done">완료</button><button class="fbtn" data-f="none">미착수</button><select class="sel" id="fYear"><option value="">연도 전체</option></select><select class="sel" id="fL1"><option value="">대분류 전체</option></select><select class="sel" id="fSess"><option value="">교시 전체</option><option value="1교시">1교시</option><option value="2교시">2교시</option><option value="3교시">3교시</option><option value="4교시">4교시</option><option value="5교시">5교시</option></select></div>
+<div class="card"><div class="twrap"><table id="dtbl" class="tbl-fixed"><colgroup><col style="width:22%"><col style="width:7%"><col style="width:7%"><col style="width:12%"><col style="width:14%"><col style="width:14%"><col style="width:10%"><col style="width:14%"></colgroup><thead><tr><th>원본 출처</th><th>연도</th><th>구분</th><th>L1 대분류</th><th>L1 중분류</th><th>L1 소분류</th><th>QID</th><th>작업 상태</th></tr></thead><tbody></tbody></table></div></div>
+<script>
+var DATA=__DATA_PLACEHOLDER__;
+var YEARS=__YEARS_PLACEHOLDER__;
+var L1S=__L1S_PLACEHOLDER__;
+var DONE_S=["완료"];
+var WIP_S=[];
+var SC={"완료":{cls:"b-done",c:"#22c55e"}};
+
+var TOTAL=DATA.length;
+var MATCHED=DATA.filter(function(r){return r[8]}).length;
+function isDone(r){return r[8]==="완료";}
+var DONE=DATA.filter(isDone).length;
+function isWip(r){return false;}
+var WIPN=DATA.filter(isWip).length;
+
+document.getElementById("cards").innerHTML='<div class="card"><h3>전체 기출문제</h3><div class="big-num">'+TOTAL+'</div><div class="sub">QID Index 등록 문제 수</div></div>'+'<div class="card"><h3>작업 착수</h3><div class="big-num" style="color:#3b82f6">'+MATCHED+'</div><div class="sub">'+(MATCHED/TOTAL*100).toFixed(1)+'% 착수율</div><div class="pbar-bg"><div class="pbar" style="width:'+(MATCHED/TOTAL*100)+'%;background:#3b82f6"></div></div></div>'+'<div class="card"><h3>작성 완료</h3><div class="big-num" style="color:#22c55e">'+DONE+'</div><div class="sub">'+(DONE/TOTAL*100).toFixed(1)+'% 완료율</div><div class="pbar-bg"><div class="pbar" style="width:'+(DONE/TOTAL*100)+'%;background:#22c55e"></div></div></div>'+'<div class="card"><h3>미착수</h3><div class="big-num" style="color:#f97316">'+(TOTAL-MATCHED)+'</div><div class="sub">'+((TOTAL-MATCHED)/TOTAL*100).toFixed(1)+'% 남음</div><div class="pbar-bg"><div class="pbar" style="width:'+((TOTAL-MATCHED)/TOTAL*100)+'%;background:#f97316"></div></div></div>';
+
+var legH="";for(var k in SC){legH+='<div class="legend-item"><div class="legend-dot" style="background:'+SC[k].c+'"></div>'+k+'</div>';}legH+='<div class="legend-item"><div class="legend-dot" style="background:#1e293b;border:1px solid #334155"></div>미착수</div>';document.getElementById("legend").innerHTML=legH;
+
+var ytb=document.querySelector("#ytbl tbody");
+var ytH="",yTotalAll=0,yDoneAll=0,yWipAll=0;
+YEARS.forEach(function(y){
+  var items=DATA.filter(function(r){return r[1]===y});
+  var total=items.length;
+  var done=items.filter(isDone).length;
+  var wip=items.filter(isWip).length;
+  var ns=total-done-wip;
+  var pct=total?(done/total*100).toFixed(1):"0";
+  yTotalAll+=total;yDoneAll+=done;yWipAll+=wip;
+  var bar="";
+  var sts={};
+  items.forEach(function(r){if(r[8])sts[r[8]]=(sts[r[8]]||0)+1;});
+  for(var s in sts){var w=(sts[s]/total*100).toFixed(1);bar+='<div style="width:'+w+'%;background:'+(SC[s]?SC[s].c:"#475569")+'" title="'+s+': '+sts[s]+'"></div>';}
+  if(ns>0)bar+='<div style="width:'+(ns/total*100).toFixed(1)+'%;background:#1e293b"></div>';
+  ytH+='<tr><td><strong>'+y+'</strong></td><td class="n">'+total+'</td><td class="n">'+done+'</td><td class="n">'+wip+'</td><td class="n">'+ns+'</td><td class="n">'+pct+'%</td><td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar" style="flex:1">'+bar+'</div><span style="font-size:11px;color:var(--muted);white-space:nowrap">'+done+'/'+total+'</span></div></td></tr>';
+});
+ytH+='<tr style="font-weight:700;border-top:2px solid var(--border)"><td>합계</td><td class="n">'+yTotalAll+'</td><td class="n">'+yDoneAll+'</td><td class="n">'+yWipAll+'</td><td class="n">'+(yTotalAll-yDoneAll-yWipAll)+'</td><td class="n">'+(yDoneAll/yTotalAll*100).toFixed(1)+'%</td><td></td></tr>';
+ytb.innerHTML=ytH;
+
+var ltb=document.querySelector("#ltbl tbody");
+var l1Arr=L1S.map(function(l){var items=DATA.filter(function(r){return r[3]===l});var d=items.filter(function(r){return DONE_S.indexOf(r[8])>=0}).length;return{l:l,t:items.length,d:d,w:items.filter(function(r){return WIP_S.indexOf(r[8])>=0}).length};}).sort(function(a,b){return(b.d+b.w)-(a.d+a.w)});
+var ltH="";
+l1Arr.forEach(function(s){
+  var ns=s.t-s.d-s.w;
+  var pct=s.t?(s.d/s.t*100).toFixed(1):"0";
+  var dW=(s.d/s.t*100).toFixed(1);var wW=(s.w/s.t*100).toFixed(1);
+  ltH+='<tr><td><strong>'+s.l+'</strong></td><td class="n">'+s.t+'</td><td class="n">'+s.d+'</td><td class="n">'+s.w+'</td><td class="n">'+ns+'</td><td class="n">'+pct+'%</td><td><div class="mini-bar"><div style="width:'+dW+'%;background:#22c55e"></div><div style="width:'+wW+'%;background:#f97316"></div><div style="width:'+(100-parseFloat(dW)-parseFloat(wW))+'%;background:#1e293b"></div></div><span style=\"font-size:11px;color:var(--muted);white-space:nowrap\">'+s.d+'/'+s.t+'</span></div></td></tr>';
+});
+ltb.innerHTML=ltH;
+
+var mt=document.getElementById("mtbl");
+var mH='<thead><tr><th></th>';
+L1S.forEach(function(l){mH+='<th class="mc" style="font-size:11px">'+l+'</th>';});
+mH+='<th class="mc" style="font-size:11px">합계</th></tr></thead><tbody>';
+YEARS.forEach(function(y){
+  mH+='<tr><td><strong>'+y+'</strong></td>';
+  var rT=0,rM=0;
+  L1S.forEach(function(l){
+    var items=DATA.filter(function(r){return r[1]===y&&r[3]===l});
+    var matched=items.filter(function(r){return r[8]}).length;
+    rT+=items.length;rM+=matched;
+    if(items.length===0)mH+='<td class="matrix-cell na">-</td>';
+    else if(matched===items.length)mH+='<td class="matrix-cell full">'+matched+'/'+items.length+'</td>';
+    else if(matched>0)mH+='<td class="matrix-cell partial">'+matched+'/'+items.length+'</td>';
+    else mH+='<td class="matrix-cell zero">0/'+items.length+'</td>';
+  });
+  mH+='<td class="matrix-cell" style="font-weight:700">'+rM+'/'+rT+'</td></tr>';
+});
+mH+='</tbody>';mt.innerHTML=mH;
+
+var dtb=document.querySelector("#dtbl tbody");
+var cl=document.getElementById("cl");
+var cF="all",cS="",cY="",cL="",cSess="";
+function sb(s,r){if(s==="완료")return'<span class="badge b-done">완료</span>';return'<span class="badge b-none">미착수</span>';}
+function render(){
+  var f=DATA;
+  if(cF==="done")f=f.filter(isDone);
+  else if(cF==="wip")f=f.filter(isWip);
+  else if(cF==="none")f=f.filter(function(r){return !r[8]});
+  if(cY)f=f.filter(function(r){return r[1]===cY;});
+  if(cL)f=f.filter(function(r){return r[3]===cL;});
+  if(cSess)f=f.filter(function(r){return r[0].indexOf(cSess)>=0;});
+  if(cS){var q=cS.toLowerCase();f=f.filter(function(r){return r.join(" ").toLowerCase().indexOf(q)>=0;});}
+  cl.textContent="("+f.length+"/"+DATA.length+")";
+  f.sort(function(a,b){if(a[1]!==b[1])return a[1]>b[1]?-1:1;var sa=a[0].match(/(\d)교시/),sb2=b[0].match(/(\d)교시/);var sn=sa?parseInt(sa[1]):0,sn2=sb2?parseInt(sb2[1]):0;if(sn!==sn2)return sn-sn2;var ma=a[0].match(/(\d+)번/),mb=b[0].match(/(\d+)번/);return (ma?parseInt(ma[1]):0)-(mb?parseInt(mb[1]):0);});
+  var show=f.slice(0,500);
+  var h="";
+  show.forEach(function(r,ri){var gi=f.indexOf(r);var di=DATA.indexOf(r);h+='<tr style="cursor:pointer" onclick="openModal('+di+')"><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td><td>'+r[5]+'</td><td style="font-size:11px;color:var(--muted)">'+(r[7]||r[6])+'</td><td>'+sb(r[8],r)+'</td></tr>';});
+  if(f.length>500)h+='<tr><td colspan="8" style="text-align:center;color:var(--muted)">... 외 '+(f.length-500)+'건 (검색으로 범위를 좁혀주세요)</td></tr>';
+  dtb.innerHTML=h;
+}
+document.querySelectorAll(".fbtn").forEach(function(b){b.addEventListener("click",function(){document.querySelectorAll(".fbtn").forEach(function(x){x.classList.remove("active")});b.classList.add("active");cF=b.dataset.f;render();});});
+document.getElementById("sbox").addEventListener("input",function(e){cS=e.target.value;render();});
+render();
+
+var fY=document.getElementById("fYear");
+fY.innerHTML='<option value="">연도 전체</option>';YEARS.forEach(function(y){var o=document.createElement("option");o.value=y;o.textContent=y;fY.appendChild(o);});
+fY.addEventListener("change",function(){cY=this.value;render();});
+var fL=document.getElementById("fL1");
+fL.innerHTML='<option value="">대분류 전체</option>';L1S.forEach(function(l){var o=document.createElement("option");o.value=l;o.textContent=l;fL.appendChild(o);});
+fL.addEventListener("change",function(){cL=this.value;render();});
+var fSess=document.getElementById("fSess");
+fSess.addEventListener("change",function(){cSess=this.value;render();});
+
+
+var changes=[];
+var editIdx=-1;
+
+function openModal(idx){
+  var r=DATA[idx];
+  editIdx=idx;
+  document.getElementById("mSrc").textContent=r[0];
+  document.getElementById("mCat").textContent=[r[3],r[4],r[5]].filter(Boolean).join(" > ");
+  document.getElementById("mQid").value=r[6]||"";
+  document.getElementById("mStatus").value=r[8]||"";
+  document.getElementById("modalTitle").textContent=r[0];
+  document.getElementById("editModal").classList.add("show");
+  setTimeout(function(){document.getElementById("mQid").focus();},100);
+}
+
+function closeModal(){
+  document.getElementById("editModal").classList.remove("show");
+  editIdx=-1;
+}
+
+function saveModal(){
+  if(editIdx<0)return;
+  var r=DATA[editIdx];
+  var newQid=document.getElementById("mQid").value.trim();
+  var newStatus=document.getElementById("mStatus").value;
+  var changed=false;
+  if(r[6]!==newQid){r[6]=newQid;r[7]=newQid;changed=true;}
+  if(r[8]!==newStatus){r[8]=newStatus;changed=true;}
+  if(changed){
+    var existing=changes.findIndex(function(c){return c.src===r[0];});
+    var entry={src:r[0],qid:newQid,status:newStatus||"미착수",time:new Date().toLocaleString()};
+    if(existing>=0)changes[existing]=entry;else changes.push(entry);
+    updateAll();
+  }
+  closeModal();
+}
+
+function updateAll(){
+  MATCHED=DATA.filter(function(r){return r[8]}).length;
+  DONE=DATA.filter(isDone).length;
+  WIPN=DATA.filter(isWip).length;
+  document.getElementById("cards").innerHTML='<div class="card"><h3>전체 기출문제</h3><div class="big-num">'+TOTAL+'</div><div class="sub">QID Index 등록 문제 수</div></div>'+'<div class="card"><h3>작업 착수</h3><div class="big-num" style="color:#3b82f6">'+MATCHED+'</div><div class="sub">'+(MATCHED/TOTAL*100).toFixed(1)+'% 착수율</div><div class="pbar-bg"><div class="pbar" style="width:'+(MATCHED/TOTAL*100)+'%;background:#3b82f6"></div></div></div>'+'<div class="card"><h3>작성 완료</h3><div class="big-num" style="color:#22c55e">'+DONE+'</div><div class="sub">'+(DONE/TOTAL*100).toFixed(1)+'% 완료율</div><div class="pbar-bg"><div class="pbar" style="width:'+(DONE/TOTAL*100)+'%;background:#22c55e"></div></div></div>'+'<div class="card"><h3>미착수</h3><div class="big-num" style="color:#f97316">'+(TOTAL-MATCHED)+'</div><div class="sub">'+((TOTAL-MATCHED)/TOTAL*100).toFixed(1)+'% 남음</div><div class="pbar-bg"><div class="pbar" style="width:'+((TOTAL-MATCHED)/TOTAL*100)+'%;background:#f97316"></div></div></div>';
+  render();
+  var cc=document.getElementById("changeCount");
+  var be=document.getElementById("btnExport");
+  if(changes.length>0){
+    cc.style.display="block";be.style.display="block";
+    cc.textContent="변경 "+changes.length+"건";
+  }else{cc.style.display="none";be.style.display="none";}
+}
+
+function exportChanges(){
+  if(changes.length===0)return;
+  var csv="﻿원본 출처,QID,작업 상태,수정 시각\n";
+  changes.forEach(function(c){csv+='"'+c.src+'","'+c.qid+'","'+c.status+'","'+c.time+'"\n';});
+  var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;a.download="MedQ_changes_"+new Date().toISOString().slice(0,10)+".csv";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+document.getElementById("editModal").addEventListener("click",function(e){
+  if(e.target===this)closeModal();
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape")closeModal();
+});
+
+</script>
+
+<div class="modal-overlay" id="editModal">
+<div class="modal">
+<h3 id="modalTitle">문제 편집</h3>
+<div class="modal-row"><label>원본 출처</label><div class="val" id="mSrc"></div></div>
+<div class="modal-row"><label>대분류 / 중분류 / 소분류</label><div class="val" id="mCat"></div></div>
+<div class="modal-row"><label>QID</label><input type="text" id="mQid" placeholder="QID 입력 (예: SGSP01500016)"></div>
+<div class="modal-row"><label>작업 상태</label>
+<select id="mStatus"><option value="">미착수</option><option value="완료">완료</option></select>
+</div>
+<div class="modal-btns">
+<button class="btn-cancel" onclick="closeModal()">취소</button>
+<button class="btn-save" onclick="saveModal()">저장</button>
+</div>
+</div>
+</div>
+<div class="change-count" id="changeCount"></div>
+<button class="btn-export" id="btnExport" onclick="exportChanges()">변경사항 내보내기</button>
+</body>
+</html>
